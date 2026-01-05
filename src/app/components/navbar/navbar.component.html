@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <h1>📚 BookstoreAPI</h1>
+      <span class="version">v1.0</span>
+    </div>
+    <div class="navbar-menu">
+      <a routerLink="/" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Books</a>
+      <a routerLink="/books-management" class="nav-item" routerLinkActive="active">Manage Books</a>
+      <a routerLink="/authors" class="nav-item" routerLinkActive="active">Authors</a>
+      <a routerLink="/orders" class="nav-item" routerLinkActive="active">Orders</a>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn-icon" (click)="openCart()">
+        🛒 <span class="badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+      </button>
+      <button class="btn-primary" (click)="navigateToAccount()">
+        {{ isAuthenticated ? "Account" : "Login" }}
+      </button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,120 @@
+<main class="main-content">
+  <div class="container">
+    <div class="page-header">
+      <h2 class="page-title">Available Books</h2>
+      <div class="search-bar">
+        <input
+          type="text"
+          placeholder="Search books by title or author..."
+          class="search-input"
+          (input)="onSearch($event)"
+          [(ngModel)]="searchQuery"
+        >
+        <button class="btn-search">🔍</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button 
+        class="filter-btn" 
+        [class.active]="currentFilter === 'all'"
+        (click)="setFilter('all')"
+      >
+        All Books
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="currentFilter === 'available'"
+        (click)="setFilter('available')"
+      >
+        Available
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="currentFilter === 'bestsellers'"
+        (click)="setFilter('bestsellers')"
+      >
+        Bestsellers
+      </button>
+    </div>
+
+    <div *ngIf="loading" class="loading">Loading books...</div>
+    
+    <div *ngIf="error" class="loading" style="color: var(--error-color);">{{ error }}</div>
+
+    <div *ngIf="!loading && !error && filteredBooks.length === 0" class="loading">
+      No books found
+    </div>
+
+    <div *ngIf="!loading && !error && filteredBooks.length > 0" class="books-grid">
+      <app-book-card
+        *ngFor="let book of filteredBooks"
+        [book]="book"
+        [isInCart]="isInCart(book.id)"
+        (addToCart)="addToCart($event)"
+        (showDetails)="showBookDetails($event)"
+      ></app-book-card>
+    </div>
+  </div>
+</main>
+
+<!-- Book Details Modal -->
+<div class="modal" [class.active]="selectedBook" (click)="closeBookDetails()">
+  <div class="modal-content modal-large" *ngIf="selectedBook" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ selectedBook.title }}</h3>
+      <button class="btn-close" (click)="closeBookDetails()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="book-detail-grid">
+        <div class="book-detail-image">
+          <img *ngIf="selectedBook.coverUrl" [src]="selectedBook.coverUrl" [alt]="selectedBook.title" />
+          <span *ngIf="!selectedBook.coverUrl">📖</span>
+        </div>
+        <div class="book-detail-info">
+          <h2>{{ selectedBook.title }}</h2>
+          <p class="book-detail-authors">
+            by {{ getAuthorsText(selectedBook) }}
+          </p>
+          
+          <div class="book-detail-meta">
+            <div class="meta-item" *ngIf="selectedBook.year">
+              <span class="meta-label">Year:</span>
+              <span class="meta-value">{{ selectedBook.year }}</span>
+            </div>
+            <div class="meta-item" *ngIf="selectedBook.isbn">
+              <span class="meta-label">ISBN:</span>
+              <span class="meta-value">{{ selectedBook.isbn }}</span>
+            </div>
+            <div class="meta-item" *ngIf="selectedBook.category">
+              <span class="meta-label">Category:</span>
+              <span class="meta-value">{{ selectedBook.category }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Availability:</span>
+              <span class="meta-value" [ngClass]="{
+                'in-stock': selectedBook.available > 10,
+                'low-stock': selectedBook.available > 0 && selectedBook.available <= 10,
+                'out-of-stock': selectedBook.available === 0
+              }">
+                {{ selectedBook.available > 0 ? selectedBook.available + ' copies available' : 'Out of stock' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="book-detail-price">${{ selectedBook.price.toFixed(2) }}</div>
+
+          <div class="book-detail-actions">
+            <button 
+              class="btn-primary" 
+              (click)="addToCart(selectedBook); closeBookDetails()"
+              [disabled]="selectedBook.available === 0"
+            >
+              {{ isInCart(selectedBook.id) ? '✓ Already in Cart' : '🛒 Add to Cart' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

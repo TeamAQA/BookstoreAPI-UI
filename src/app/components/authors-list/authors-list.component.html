@@ -1,0 +1,177 @@
+<div class="main-content">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">👥 Authors Management</h1>
+      
+      <div class="header-actions">
+        <div class="search-bar">
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search by first name or last name..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+          >
+          <button class="btn-search" (click)="onSearch()">🔍</button>
+        </div>
+        
+        <button class="btn-add" (click)="openAddModal()">
+          ➕ Add New Author
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      Loading authors...
+    </div>
+
+    <div *ngIf="!loading && filteredAuthors.length === 0" class="no-results">
+      <p>No authors found.</p>
+    </div>
+
+    <div *ngIf="!loading && filteredAuthors.length > 0" class="authors-grid">
+      <div *ngFor="let author of filteredAuthors" class="author-card">
+        <div class="author-info">
+          <div class="author-avatar">
+            {{ author.firstName.charAt(0) }}{{ author.lastName.charAt(0) }}
+          </div>
+          <div class="author-details">
+            <h3 class="author-name">{{ author.firstName }} {{ author.lastName }}</h3>
+            <p class="author-id">ID: {{ author.id }}</p>
+          </div>
+        </div>
+        
+        <div class="author-actions">
+          <button class="btn-icon btn-edit" (click)="openEditModal(author)" title="Edit">
+            ✏️
+          </button>
+          <button class="btn-icon btn-delete" (click)="openDeleteModal(author)" title="Delete">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Author Modal -->
+<div class="modal" [class.active]="showAddModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>➕ Add New Author</h3>
+      <button class="btn-close" (click)="closeAddModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <form (submit)="addAuthor(); $event.preventDefault()">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input 
+            type="text" 
+            id="firstName" 
+            class="form-input" 
+            [(ngModel)]="authorForm.firstName"
+            name="firstName"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input 
+            type="text" 
+            id="lastName" 
+            class="form-input" 
+            [(ngModel)]="authorForm.lastName"
+            name="lastName"
+            required
+          >
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeAddModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            Add Author
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Author Modal -->
+<div class="modal" [class.active]="showEditModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>✏️ Edit Author</h3>
+      <button class="btn-close" (click)="closeEditModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <form (submit)="updateAuthor(); $event.preventDefault()">
+        <div class="form-group">
+          <label for="editFirstName">First Name</label>
+          <input 
+            type="text" 
+            id="editFirstName" 
+            class="form-input" 
+            [(ngModel)]="authorForm.firstName"
+            name="editFirstName"
+            required
+          >
+        </div>
+        
+        <div class="form-group">
+          <label for="editLastName">Last Name</label>
+          <input 
+            type="text" 
+            id="editLastName" 
+            class="form-input" 
+            [(ngModel)]="authorForm.lastName"
+            name="editLastName"
+            required
+          >
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeEditModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary">
+            Update Author
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal" [class.active]="showDeleteModal">
+  <div class="modal-content modal-small">
+    <div class="modal-header">
+      <h3>⚠️ Delete Author</h3>
+      <button class="btn-close" (click)="closeDeleteModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="delete-warning">
+        Are you sure you want to delete <strong>{{ selectedAuthor?.firstName }} {{ selectedAuthor?.lastName }}</strong>?
+      </p>
+      <p class="delete-note">
+        This action cannot be undone. If this author has books, the deletion will fail.
+      </p>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" (click)="closeDeleteModal()">
+          Cancel
+        </button>
+        <button type="button" class="btn-danger" (click)="deleteAuthor()">
+          Delete Author
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

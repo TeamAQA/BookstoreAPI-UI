@@ -1,0 +1,147 @@
+<div class="modal" [class.active]="isOpen" (click)="onBackdropClick($event)">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Your Cart</h3>
+      <button class="btn-close" (click)="close()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p *ngIf="cartItems.length === 0" class="empty-cart">Your cart is empty</p>
+      
+      <div *ngIf="cartItems.length > 0">
+        <div *ngFor="let item of cartItems" class="cart-item">
+          <div class="cart-item-image">
+            <img *ngIf="item.book.coverUrl" [src]="item.book.coverUrl" [alt]="item.book.title" />
+            <span *ngIf="!item.book.coverUrl">📖</span>
+          </div>
+          <div class="cart-item-info">
+            <div class="cart-item-title">{{ item.book.title }}</div>
+            <div class="cart-item-authors">{{ getAuthorsText(item) }}</div>
+            <div class="cart-item-controls">
+              <button class="btn-qty" (click)="updateQuantity(item.book.id, -1)">−</button>
+              <span class="cart-item-qty">{{ item.quantity }}</span>
+              <button class="btn-qty" (click)="updateQuantity(item.book.id, 1)">+</button>
+            </div>
+            <button class="btn-remove" (click)="removeFromCart(item.book.id)">Remove</button>
+          </div>
+          <div class="cart-item-price">
+            <div class="cart-item-total">${{ getItemTotal(item).toFixed(2) }}</div>
+            <div style="color: var(--text-muted); font-size: 0.85rem;">
+              ${{ item.book.price.toFixed(2) }} each
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer" *ngIf="cartItems.length > 0">
+      <div class="cart-total">
+        <strong>Total:</strong>
+        <span>${{ cartTotal.toFixed(2) }}</span>
+      </div>
+      <button class="btn-primary btn-full" (click)="checkout()">Proceed to Checkout</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout Form Modal -->
+<div class="modal" [class.active]="showCheckoutForm" (click)="onBackdropClick($event)">
+  <div class="modal-content checkout-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Shipping Address</h3>
+      <button class="btn-close" (click)="closeCheckout()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <form>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input 
+            type="text" 
+            id="name" 
+            [(ngModel)]="recipient.name" 
+            name="name"
+            placeholder="John Doe"
+            [disabled]="isSubmitting">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            [(ngModel)]="recipient.email" 
+            name="email"
+            placeholder="john.doe@example.com"
+            [disabled]="isSubmitting">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            [(ngModel)]="recipient.phone" 
+            name="phone"
+            placeholder="123456789"
+            [disabled]="isSubmitting">
+        </div>
+
+        <div class="form-group">
+          <label for="street">Street and Number</label>
+          <input 
+            type="text" 
+            id="street" 
+            [(ngModel)]="recipient.street" 
+            name="street"
+            placeholder="Main Street 12/34"
+            [disabled]="isSubmitting">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input 
+              type="text" 
+              id="city" 
+              [(ngModel)]="recipient.city" 
+              name="city"
+              placeholder="Warsaw"
+              [disabled]="isSubmitting">
+          </div>
+
+          <div class="form-group">
+            <label for="zipCode">Zip Code</label>
+            <input 
+              type="text" 
+              id="zipCode" 
+              [(ngModel)]="recipient.zipCode" 
+              name="zipCode"
+              placeholder="00-001"
+              [disabled]="isSubmitting">
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <div class="summary-row">
+            <span>Number of items:</span>
+            <strong>{{ cartItems.length }}</strong>
+          </div>
+          <div class="summary-row total">
+            <span>Total Amount:</span>
+            <strong>${{ cartTotal.toFixed(2) }}</strong>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeCheckout()" [disabled]="isSubmitting">
+        Close
+      </button>
+      <button class="btn-primary" (click)="submitOrder()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Submitting...' : 'Place Order' }}
+      </button>
+    </div>
+  </div>
+</div>

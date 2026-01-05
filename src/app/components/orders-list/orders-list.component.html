@@ -1,0 +1,186 @@
+<div class="main-content">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">📦 Orders</h1>
+      
+      <div class="header-actions">
+        <div class="search-bar">
+          <input 
+            type="text" 
+            class="search-input" 
+            placeholder="Search by order ID, customer name, email or status..."
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+          >
+          <button class="btn-search" (click)="onSearch()">🔍</button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      Loading orders...
+    </div>
+
+    <div *ngIf="!loading && filteredOrders.length === 0" class="no-results">
+      <p>No orders found.</p>
+    </div>
+
+    <div *ngIf="!loading && filteredOrders.length > 0" class="orders-grid">
+      <div *ngFor="let order of filteredOrders" class="order-card" (click)="openDetailsModal(order)">
+        <div class="order-header">
+          <div class="order-id">
+            <span class="label">Order #</span>
+            <span class="value">{{ order.id }}</span>
+          </div>
+          <span class="order-status" [ngClass]="getStatusClass(order.status)">
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </div>
+
+        <div class="order-body">
+          <div class="order-customer">
+            <div class="customer-icon">👤</div>
+            <div class="customer-info">
+              <h4>{{ order.recipient.name }}</h4>
+              <p>{{ order.recipient.email }}</p>
+              <p>📞 {{ order.recipient.phone }}</p>
+            </div>
+          </div>
+
+          <div class="order-address">
+            <div class="address-icon">📍</div>
+            <div class="address-info">
+              <p>{{ order.recipient.street }}</p>
+              <p>{{ order.recipient.zipCode }} {{ order.recipient.city }}</p>
+            </div>
+          </div>
+
+          <div class="order-summary">
+            <div class="summary-item">
+              <span class="summary-label">Items:</span>
+              <span class="summary-value">{{ order.items.length }}</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">Total Books:</span>
+              <span class="summary-value">{{ getTotalQuantity(order) }}</span>
+            </div>
+            <div class="summary-item total">
+              <span class="summary-label">Total:</span>
+              <span class="summary-value">${{ getOrderTotal(order).toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-footer">
+          <button class="btn-view" (click)="openDetailsModal(order); $event.stopPropagation()">
+            View Details →
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal" [class.active]="showDetailsModal">
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+      <h3>📦 Order #{{ selectedOrder?.id }}</h3>
+      <button class="btn-close" (click)="closeDetailsModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body" *ngIf="selectedOrder">
+      <div class="order-status-banner" [ngClass]="getStatusClass(selectedOrder.status)">
+        <span class="status-icon">
+          {{ selectedOrder.status === 'DELIVERED' ? '✅' : 
+             selectedOrder.status === 'IN_DELIVERY' ? '🚚' : 
+             selectedOrder.status === 'CANCELED' ? '❌' :
+             selectedOrder.status === 'ABANDONED' ? '⚠️' : '📋' }}
+        </span>
+        <span class="status-text">{{ getStatusLabel(selectedOrder.status) }}</span>
+      </div>
+
+      <div class="details-grid">
+        <div class="details-section">
+          <h4>📋 Order Information</h4>
+          <div class="info-item">
+            <span class="info-label">Order ID:</span>
+            <span class="info-value">#{{ selectedOrder.id }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-value">{{ getStatusLabel(selectedOrder.status) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Total Items:</span>
+            <span class="info-value">{{ selectedOrder.items.length }}</span>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>👤 Customer Information</h4>
+          <div class="info-item">
+            <span class="info-label">Name:</span>
+            <span class="info-value">{{ selectedOrder.recipient.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ selectedOrder.recipient.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ selectedOrder.recipient.phone }}</span>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>📍 Delivery Address</h4>
+          <div class="info-item">
+            <span class="info-label">Street:</span>
+            <span class="info-value">{{ selectedOrder.recipient.street }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">City:</span>
+            <span class="info-value">{{ selectedOrder.recipient.city }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Zip Code:</span>
+            <span class="info-value">{{ selectedOrder.recipient.zipCode }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-items-section">
+        <h4>📚 Order Items</h4>
+        <div class="order-items-list">
+          <div *ngFor="let item of selectedOrder.items" class="order-item">
+            <div class="item-image">
+              <img *ngIf="item.book.coverUrl" [src]="item.book.coverUrl" alt="{{ item.book.title }}">
+              <span *ngIf="!item.book.coverUrl">📚</span>
+            </div>
+            <div class="item-details">
+              <h5>{{ item.book.title }}</h5>
+              <p class="item-authors">{{ getAuthorsText(item.book.authors) }}</p>
+              <p class="item-year" *ngIf="item.book.year">Year: {{ item.book.year }}</p>
+            </div>
+            <div class="item-quantity">
+              <span class="quantity-label">Qty:</span>
+              <span class="quantity-value">{{ item.quantity }}</span>
+            </div>
+            <div class="item-price">
+              <p class="unit-price">${{ item.book.price.toFixed(2) }} each</p>
+              <p class="total-price">${{ (item.book.price * item.quantity).toFixed(2) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-total-section">
+          <div class="total-row">
+            <span class="total-label">Total:</span>
+            <span class="total-value">${{ getOrderTotal(selectedOrder).toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

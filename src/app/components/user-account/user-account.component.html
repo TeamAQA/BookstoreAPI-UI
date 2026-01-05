@@ -1,0 +1,56 @@
+<div class="account-container">
+  <div class="account-card">
+    <div class="account-header">
+      <h1 class="account-title">User Account</h1>
+      <button class="btn-logout" (click)="logout()">Logout</button>
+    </div>
+
+    <div class="account-content" *ngIf="user">
+      <section class="info-section">
+        <h2 class="section-title">Profile Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">User ID:</span>
+            <span class="info-value">{{ user.id }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Username:</span>
+            <span class="info-value">{{ user.username }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ user.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">First Name:</span>
+            <span class="info-value">{{ user.firstName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Last Name:</span>
+            <span class="info-value">{{ user.lastName }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="token-section">
+        <h2 class="section-title">API Token</h2>
+        <p class="token-description">
+          Use this token to authenticate API requests
+        </p>
+        <div class="token-display">
+          <code class="token-code" [class.visible]="showToken">
+            {{ showToken ? token : "••••••••••••••••••••••••••••••••" }}
+          </code>
+          <div class="token-actions">
+            <button class="btn-token" (click)="toggleTokenVisibility()">
+              {{ showToken ? "Hide" : "Show" }}
+            </button>
+            <button class="btn-token btn-copy" (click)="copyToken()">
+              Copy
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

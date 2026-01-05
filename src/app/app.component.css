@@ -1,0 +1,46 @@
+/* App-specific styles can go here */
+
+.app-footer {
+  background: var(--surface);
+  color: var(--text-secondary);
+  padding: 3rem 1rem 2rem;
+  margin-top: 4rem;
+  text-align: center;
+  border-top: 2px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-text {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.footer-tagline {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.footer-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.footer-link:hover {
+  color: var(--primary-hover);
+  text-decoration: none;
+  transform: translateY(-1px);
+}

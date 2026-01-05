@@ -1,0 +1,24 @@
+<div class="book-card" (click)="onShowDetails()">
+  <div class="book-image">
+    <img *ngIf="book.coverUrl" [src]="book.coverUrl" [alt]="book.title" />
+    <span *ngIf="!book.coverUrl">📖</span>
+  </div>
+  <div class="book-info">
+    <h3 class="book-title">{{ book.title }}</h3>
+    <p class="book-authors">{{ authorsText }}</p>
+    <p class="book-year" *ngIf="book.year">{{ book.year }}</p>
+    <div class="book-footer">
+      <div>
+        <div class="book-price">${{ book.price.toFixed(2) }}</div>
+        <div class="book-stock" [ngClass]="stockClass">{{ stockText }}</div>
+      </div>
+      <button 
+        class="btn-add-cart" 
+        (click)="onAddToCart($event)"
+        [disabled]="book.available === 0"
+      >
+        {{ isInCart ? '✓ In Cart' : '🛒 Add' }}
+      </button>
+    </div>
+  </div>
+</div>
