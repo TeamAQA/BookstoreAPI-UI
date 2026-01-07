@@ -5,10 +5,16 @@
       <span class="version">v1.0</span>
     </div>
     <div class="navbar-menu">
-      <a routerLink="/" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Books</a>
+      <a routerLink="/" class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        Books <span class="count">({{ booksCount }})</span>
+      </a>
       <a routerLink="/books-management" class="nav-item" routerLinkActive="active">Manage Books</a>
-      <a routerLink="/authors" class="nav-item" routerLinkActive="active">Authors</a>
-      <a routerLink="/orders" class="nav-item" routerLinkActive="active">Orders</a>
+      <a routerLink="/authors" class="nav-item" routerLinkActive="active">
+        Authors <span class="count">({{ authorsCount }})</span>
+      </a>
+      <a routerLink="/orders" class="nav-item" routerLinkActive="active">
+        Orders <span class="count">({{ ordersCount }})</span>
+      </a>
     </div>
     <div class="navbar-actions">
       <button class="btn-icon" (click)="openCart()">

@@ -58,6 +58,11 @@
     border-bottom: 2px solid transparent;
 }
 
+.nav-item .count {
+    font-weight: 400;
+    opacity: 0.7;
+}
+
 .nav-item:hover,
 .nav-item.active {
     color: var(--primary-color);
