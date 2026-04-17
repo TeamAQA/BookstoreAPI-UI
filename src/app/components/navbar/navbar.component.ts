@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
+import { filter } from "rxjs/operators";
 import { CartService } from "../../services/cart.service";
 import { AuthService } from "../../services/auth.service";
 import { BookService } from "../../services/book.service";
@@ -19,12 +20,12 @@ export class NavbarComponent implements OnInit {
   ordersCount = 0;
 
   constructor(
-    private cartService: CartService,
-    private authService: AuthService,
-    private bookService: BookService,
-    private authorService: AuthorService,
-    private orderService: OrderService,
-    private router: Router
+    private readonly cartService: CartService,
+    private readonly authService: AuthService,
+    private readonly bookService: BookService,
+    private readonly authorService: AuthorService,
+    private readonly orderService: OrderService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -36,13 +37,12 @@ export class NavbarComponent implements OnInit {
       this.isAuthenticated = isAuth;
     });
 
-    // Load counts
-    this.loadCounts();
-
-    // Refresh counts when navigating
-    this.router.events.subscribe(() => {
-      this.loadCounts();
-    });
+    // Refresh counts when navigating (also fires on initial navigation)
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.loadCounts();
+      });
   }
 
   loadCounts(): void {
